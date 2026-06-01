@@ -41,6 +41,18 @@ function App() {
     [products],
   );
   const recentOrders = useMemo(() => orders.slice(0, 4), [orders]);
+  const topStockProducts = useMemo(
+    () => [...products].sort((a, b) => Number(b.stock) - Number(a.stock)).slice(0, 6),
+    [products],
+  );
+  const highestStock = useMemo(
+    () => Math.max(1, ...topStockProducts.map((product) => Number(product.stock || 0))),
+    [topStockProducts],
+  );
+  const maxOrderTotal = useMemo(
+    () => Math.max(1, ...recentOrders.map((order) => Number(order.total_amount || 0))),
+    [recentOrders],
+  );
 
   async function request(path, options = {}) {
     const response = await fetch(`${API_URL}${path}`, {
@@ -227,6 +239,42 @@ function App() {
                 <span>Average Order</span>
                 <strong>Rs. {orders.length ? (totalRevenue / orders.length).toFixed(2) : "0.00"}</strong>
               </article>
+            </div>
+          </DataPanel>
+
+          <DataPanel title="Revenue by Recent Orders">
+            <div className="chart-panel">
+              {recentOrders.length === 0 && <p className="empty-text">Create orders to show revenue bars.</p>}
+              {recentOrders.map((order) => {
+                const percent = Math.max(4, (Number(order.total_amount || 0) / maxOrderTotal) * 100);
+                return (
+                  <article className="bar-row" key={order.id}>
+                    <span>#{order.id}</span>
+                    <div className="bar-track">
+                      <div className="bar-fill revenue" style={{ width: `${percent}%` }} />
+                    </div>
+                    <strong>Rs. {order.total_amount}</strong>
+                  </article>
+                );
+              })}
+            </div>
+          </DataPanel>
+
+          <DataPanel title="Inventory Stock Levels">
+            <div className="chart-panel">
+              {topStockProducts.length === 0 && <p className="empty-text">Create products to show stock levels.</p>}
+              {topStockProducts.map((product) => {
+                const percent = Math.max(4, (Number(product.stock || 0) / highestStock) * 100);
+                return (
+                  <article className="bar-row" key={product.id}>
+                    <span>{product.sku}</span>
+                    <div className="bar-track">
+                      <div className="bar-fill stock" style={{ width: `${percent}%` }} />
+                    </div>
+                    <strong>{product.stock}</strong>
+                  </article>
+                );
+              })}
             </div>
           </DataPanel>
 
