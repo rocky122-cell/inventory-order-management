@@ -115,6 +115,7 @@ uvicorn app.main:app --reload
 - `POST /orders` - Create order and reduce stock
 - `GET /orders` - List orders
 - `GET /orders/{order_id}` - Get order details
+- `DELETE /orders/{order_id}` - Delete order
 
 ## Example Order Request
 

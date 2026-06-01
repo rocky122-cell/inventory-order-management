@@ -157,6 +157,16 @@ function App() {
     }
   }
 
+  async function deleteOrder(orderId) {
+    try {
+      await request(`/orders/${orderId}`, { method: "DELETE" });
+      setMessage("Order deleted.");
+      await loadData();
+    } catch (error) {
+      setMessage(error.message);
+    }
+  }
+
   return (
     <main className="app-shell">
       <header className="topbar">
@@ -333,6 +343,9 @@ function App() {
                       </li>
                     ))}
                   </ul>
+                  <button className="ghost-button" onClick={() => deleteOrder(order.id)} type="button">
+                    Delete Order
+                  </button>
                 </article>
               ))}
             </div>

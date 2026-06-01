@@ -91,6 +91,15 @@ def get_order(order_id: int, db: Session = Depends(get_db)) -> models.Order:
     return order
 
 
+@router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_order(order_id: int, db: Session = Depends(get_db)) -> None:
+    order = db.get(models.Order, order_id)
+    if order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+    db.delete(order)
+    db.commit()
+
+
 def _query_order(db: Session, order_id: int) -> models.Order | None:
     return (
         db.query(models.Order)
@@ -101,4 +110,3 @@ def _query_order(db: Session, order_id: int) -> models.Order | None:
         .filter(models.Order.id == order_id)
         .first()
     )
-
