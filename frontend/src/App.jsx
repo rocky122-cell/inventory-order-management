@@ -18,7 +18,7 @@ const emptyCustomer = {
 };
 
 function App() {
-  const [activeTab, setActiveTab] = useState("products");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [products, setProducts] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -32,6 +32,15 @@ function App() {
     () => products.filter((product) => product.stock <= 5),
     [products],
   );
+  const totalRevenue = useMemo(
+    () => orders.reduce((sum, order) => sum + Number(order.total_amount || 0), 0),
+    [orders],
+  );
+  const inventoryUnits = useMemo(
+    () => products.reduce((sum, product) => sum + Number(product.stock || 0), 0),
+    [products],
+  );
+  const recentOrders = useMemo(() => orders.slice(0, 4), [orders]);
 
   async function request(path, options = {}) {
     const response = await fetch(`${API_URL}${path}`, {
@@ -187,7 +196,7 @@ function App() {
       </section>
 
       <nav className="tabs" aria-label="Management sections">
-        {["products", "customers", "orders"].map((tab) => (
+        {["dashboard", "products", "customers", "orders"].map((tab) => (
           <button
             className={activeTab === tab ? "tab active" : "tab"}
             key={tab}
@@ -201,6 +210,60 @@ function App() {
 
       {message && <div className="notice">{message}</div>}
       {loading && <div className="notice muted">Loading latest data...</div>}
+
+      {activeTab === "dashboard" && (
+        <section className="dashboard-grid">
+          <DataPanel title="Business Dashboard">
+            <div className="summary-grid">
+              <article className="summary-card">
+                <span>Total Revenue</span>
+                <strong>Rs. {totalRevenue.toFixed(2)}</strong>
+              </article>
+              <article className="summary-card">
+                <span>Inventory Units</span>
+                <strong>{inventoryUnits}</strong>
+              </article>
+              <article className="summary-card">
+                <span>Average Order</span>
+                <strong>Rs. {orders.length ? (totalRevenue / orders.length).toFixed(2) : "0.00"}</strong>
+              </article>
+            </div>
+          </DataPanel>
+
+          <DataPanel title="Low Stock Products">
+            <div className="compact-list">
+              {lowStockProducts.length === 0 && <p className="empty-text">No low-stock products.</p>}
+              {lowStockProducts.map((product) => (
+                <article className="compact-row" key={product.id}>
+                  <div>
+                    <strong>{product.name}</strong>
+                    <span>{product.sku}</span>
+                  </div>
+                  <b>{product.stock}</b>
+                </article>
+              ))}
+            </div>
+          </DataPanel>
+
+          <DataPanel title="Recent Orders">
+            <div className="order-list">
+              {recentOrders.length === 0 && <p className="empty-text">No orders yet.</p>}
+              {recentOrders.map((order) => (
+                <article className="order-card" key={order.id}>
+                  <div>
+                    <strong>Order #{order.id}</strong>
+                    <span>{order.customer.name}</span>
+                  </div>
+                  <div>
+                    <strong>Rs. {order.total_amount}</strong>
+                    <span>{order.status}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </DataPanel>
+        </section>
+      )}
 
       {activeTab === "products" && (
         <TwoColumn>
