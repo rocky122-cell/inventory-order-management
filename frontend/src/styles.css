@@ -83,6 +83,41 @@ h2 {
   margin-bottom: 18px;
 }
 
+.workspace-layout {
+  align-items: start;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 230px minmax(0, 1fr);
+}
+
+.sidebar {
+  background: #121c2b;
+  border: 1px solid #26354a;
+  border-radius: 8px;
+  padding: 14px;
+  position: sticky;
+  top: 18px;
+}
+
+.sidebar-title {
+  border-bottom: 1px solid #26354a;
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+}
+
+.sidebar-title span {
+  color: #8ea5c3;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.content-area {
+  min-width: 0;
+}
+
 .metric {
   background: #121c2b;
   border: 1px solid #26354a;
@@ -119,13 +154,8 @@ h2 {
 }
 
 .tabs {
-  background: #111b2a;
-  border: 1px solid #26354a;
-  border-radius: 8px;
-  display: inline-flex;
+  display: grid;
   gap: 4px;
-  margin-bottom: 16px;
-  padding: 4px;
 }
 
 .tab {
@@ -134,6 +164,7 @@ h2 {
   border-radius: 6px;
   color: #9fb1c9;
   cursor: pointer;
+  text-align: left;
   padding: 9px 14px;
   text-transform: capitalize;
 }
@@ -453,14 +484,17 @@ th {
   .two-column,
   .dashboard-grid,
   .summary-grid,
-  .quick-actions {
+  .quick-actions,
+  .workspace-layout {
     grid-template-columns: 1fr;
   }
 
+  .sidebar {
+    position: static;
+  }
+
   .tabs {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .bar-row {

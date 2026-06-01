@@ -216,31 +216,39 @@ function App() {
         </div>
       </header>
 
-      <section className="metric-grid">
-        <Metric label="Products" value={products.length} tone="green" />
-        <Metric label="Customers" value={customers.length} tone="blue" />
-        <Metric label="Orders" value={orders.length} tone="gold" />
-        <Metric label="Low Stock" value={lowStockProducts.length} tone="red" />
-      </section>
+      <div className="workspace-layout">
+        <aside className="sidebar">
+          <div className="sidebar-title">
+            <span>Menu</span>
+            <strong>Admin Panel</strong>
+          </div>
+          <nav className="tabs" aria-label="Management sections">
+            {["dashboard", "products", "customers", "orders"].map((tab) => (
+              <button
+                className={activeTab === tab ? "tab active" : "tab"}
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                type="button"
+              >
+                {tab}
+              </button>
+            ))}
+          </nav>
+        </aside>
 
-      <nav className="tabs" aria-label="Management sections">
-        {["dashboard", "products", "customers", "orders"].map((tab) => (
-          <button
-            className={activeTab === tab ? "tab active" : "tab"}
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            type="button"
-          >
-            {tab}
-          </button>
-        ))}
-      </nav>
+        <section className="content-area">
+          <section className="metric-grid">
+            <Metric label="Products" value={products.length} tone="green" />
+            <Metric label="Customers" value={customers.length} tone="blue" />
+            <Metric label="Orders" value={orders.length} tone="gold" />
+            <Metric label="Low Stock" value={lowStockProducts.length} tone="red" />
+          </section>
 
-      {message && <div className="notice">{message}</div>}
-      {loading && <div className="notice muted">Loading latest data...</div>}
+          {message && <div className="notice">{message}</div>}
+          {loading && <div className="notice muted">Loading latest data...</div>}
 
-      {activeTab === "dashboard" && (
-        <section className="dashboard-grid">
+          {activeTab === "dashboard" && (
+            <section className="dashboard-grid">
           <section className="quick-actions">
             <button onClick={() => setActiveTab("products")} type="button">Add Product</button>
             <button onClick={() => setActiveTab("customers")} type="button">Add Customer</button>
@@ -347,11 +355,11 @@ function App() {
               ))}
             </div>
           </DataPanel>
-        </section>
-      )}
+            </section>
+          )}
 
-      {activeTab === "products" && (
-        <TwoColumn>
+          {activeTab === "products" && (
+            <TwoColumn>
           <FormPanel title="Add Product" onSubmit={createProduct}>
             <Input label="Name" minLength="2" value={productForm.name} onChange={(name) => setProductForm({ ...productForm, name })} />
             <Input label="SKU" minLength="2" value={productForm.sku} onChange={(sku) => setProductForm({ ...productForm, sku })} />
@@ -390,11 +398,11 @@ function App() {
             </table>
             {products.length === 0 && <p className="empty-text table-empty">No products yet. Add your first product to begin tracking stock.</p>}
           </DataPanel>
-        </TwoColumn>
-      )}
+            </TwoColumn>
+          )}
 
-      {activeTab === "customers" && (
-        <TwoColumn>
+          {activeTab === "customers" && (
+            <TwoColumn>
           <FormPanel title="Add Customer" onSubmit={createCustomer}>
             <Input label="Name" minLength="2" value={customerForm.name} onChange={(name) => setCustomerForm({ ...customerForm, name })} />
             <Input label="Email" type="email" value={customerForm.email} onChange={(email) => setCustomerForm({ ...customerForm, email })} />
@@ -430,11 +438,11 @@ function App() {
             </table>
             {customers.length === 0 && <p className="empty-text table-empty">No customers yet. Create a customer before placing orders.</p>}
           </DataPanel>
-        </TwoColumn>
-      )}
+            </TwoColumn>
+          )}
 
-      {activeTab === "orders" && (
-        <TwoColumn>
+          {activeTab === "orders" && (
+            <TwoColumn>
           <FormPanel title="Place Order" onSubmit={createOrder}>
             <label>
               Customer
@@ -500,8 +508,10 @@ function App() {
               ))}
             </div>
           </DataPanel>
-        </TwoColumn>
-      )}
+            </TwoColumn>
+          )}
+        </section>
+      </div>
     </main>
   );
 }
