@@ -53,6 +53,19 @@ function App() {
     () => Math.max(1, ...recentOrders.map((order) => Number(order.total_amount || 0))),
     [recentOrders],
   );
+  const activityItems = useMemo(
+    () => [
+      ...orders.slice(0, 2).map((order) => ({
+        title: `Order #${order.id} placed`,
+        detail: `${order.customer.name} - Rs. ${order.total_amount}`,
+      })),
+      ...products.slice(0, 2).map((product) => ({
+        title: `${product.name} in inventory`,
+        detail: `${product.stock} units available`,
+      })),
+    ],
+    [orders, products],
+  );
 
   async function request(path, options = {}) {
     const response = await fetch(`${API_URL}${path}`, {
@@ -195,9 +208,12 @@ function App() {
           <p className="eyebrow">Inventory API Client</p>
           <h1>Inventory & Order Management</h1>
         </div>
-        <button className="icon-button" onClick={loadData} title="Refresh data" type="button">
-          Refresh
-        </button>
+        <div className="topbar-actions">
+          <span className="status-pill">Live API</span>
+          <button className="icon-button" onClick={loadData} title="Refresh data" type="button">
+            Refresh
+          </button>
+        </div>
       </header>
 
       <section className="metric-grid">
@@ -225,6 +241,12 @@ function App() {
 
       {activeTab === "dashboard" && (
         <section className="dashboard-grid">
+          <section className="quick-actions">
+            <button onClick={() => setActiveTab("products")} type="button">Add Product</button>
+            <button onClick={() => setActiveTab("customers")} type="button">Add Customer</button>
+            <button onClick={() => setActiveTab("orders")} type="button">Place Order</button>
+          </section>
+
           <DataPanel title="Business Dashboard">
             <div className="summary-grid">
               <article className="summary-card">
@@ -310,6 +332,21 @@ function App() {
               ))}
             </div>
           </DataPanel>
+
+          <DataPanel title="Activity Feed">
+            <div className="activity-list">
+              {activityItems.length === 0 && <p className="empty-text">Activity will appear after you add records.</p>}
+              {activityItems.map((item) => (
+                <article className="activity-item" key={`${item.title}-${item.detail}`}>
+                  <span />
+                  <div>
+                    <strong>{item.title}</strong>
+                    <p>{item.detail}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </DataPanel>
         </section>
       )}
 
@@ -351,6 +388,7 @@ function App() {
                 ))}
               </tbody>
             </table>
+            {products.length === 0 && <p className="empty-text table-empty">No products yet. Add your first product to begin tracking stock.</p>}
           </DataPanel>
         </TwoColumn>
       )}
@@ -390,6 +428,7 @@ function App() {
                 ))}
               </tbody>
             </table>
+            {customers.length === 0 && <p className="empty-text table-empty">No customers yet. Create a customer before placing orders.</p>}
           </DataPanel>
         </TwoColumn>
       )}
